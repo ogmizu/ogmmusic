@@ -100,4 +100,25 @@ def handle_text(message):
         bot.send_message(message.chat.id, "не удалось найти новый трек 😿")
 
 # 🚀 запуск
-bot.polling(none_stop=True)
+from flask import Flask, request
+
+app = Flask(__name__)
+
+WEBHOOK_PATH = f"/{TELEGRAM_TOKEN}"
+WEBHOOK_URL = f"https://ogmmusic.onrender.com{WEBHOOK_PATH}"  # если твой render-проект называется ogmmusic
+
+@app.route(WEBHOOK_PATH, methods=['POST'])
+def webhook():
+    json_str = request.get_data().decode('utf-8')
+    update = telebot.types.Update.de_json(json_str)
+    bot.process_new_updates([update])
+    return '', 200
+
+@app.route('/', methods=['GET'])
+def index():
+    return 'бот работает'
+
+if __name__ == '__main__':
+    bot.remove_webhook()
+    bot.set_webhook(url=WEBHOOK_URL)
+    app.run(host='0.0.0.0', port=10000)

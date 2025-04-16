@@ -1,2 +1,2 @@
 #!/bin/bash
-python ogmmusic.py
+gunicorn ogmmusic:app --bind 0.0.0.0:10000
